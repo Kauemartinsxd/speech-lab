@@ -1,0 +1,116 @@
+# =============================================================================
+# Variantes sistemáticas do português vernacular brasileiro.
+#
+# Este arquivo é a fonte da verdade da camada de classificação. Um desvio que
+# casa aqui é VARIANTE VERNACULAR — traço documentado do pt-BR, não erro.
+#
+# Dirigido por REGRA, não só por léxico: uma lista de palavras só reconheceria
+# as palavras da lista. As regras generalizam; o léxico é atalho de alta
+# confiança para os casos canônicos.
+#
+# Versionado de propósito: mudar a classificação de um desvio muda um resultado
+# de pesquisa, então a versão precisa aparecer no export do dataset.
+# =============================================================================
+version: 1
+idioma: pt-BR
+
+processos:
+  - id: metatese
+    rotulo: "Metátese"
+    descricao: >
+      Transposição de segmentos, tipicamente /r/ atravessando a vogal e mudando
+      de sílaba. Verificado com espeak-ng: problema = p r o b l e m æ e
+      pobrema = p o b r e m æ — o /r/ sai do índice 1 e reaparece no 3, fora do
+      alcance de uma transposição adjacente.
+    regra:
+      tipo: transposicao_janela
+      alvo: [r, ɾ]
+      janela: 3
+    exemplos:
+      - { padrao: problema, variante: pobrema }
+      - { padrao: bicicleta, variante: bicicreta }
+
+  - id: rotacismo
+    rotulo: "Rotacismo"
+    descricao: "Substituição de /l/ por /r/ em onset complexo (pl->pr, bl->br, cl->cr)."
+    regra:
+      tipo: substituicao
+      de: [l]
+      para: [r, ɾ]
+      contexto: onset_complexo
+    exemplos:
+      - { padrao: planta, variante: pranta }
+      - { padrao: blusa, variante: brusa }
+
+  - id: monotongacao
+    rotulo: "Monotongação"
+    descricao: "Redução de ditongo decrescente a vogal simples."
+    regra:
+      tipo: reducao_ditongo
+      pares:
+        - { de: "ej", para: "e" }
+        - { de: "aj", para: "a" }
+        - { de: "ow", para: "o" }
+    exemplos:
+      - { padrao: peixe, variante: pexe }
+      - { padrao: caixa, variante: caxa }
+
+  - id: reducao_infinitivo
+    rotulo: "Redução de infinitivo"
+    descricao: "Apagamento do /r/ final de verbos no infinitivo."
+    regra:
+      tipo: apagamento_final
+      alvo: [r, ɾ]
+      condicao: infinitivo
+    exemplos:
+      - { padrao: falar, variante: falá }
+      - { padrao: comer, variante: comê }
+
+  - id: apagamento_r_final
+    rotulo: "Apagamento de /r/ final"
+    descricao: "Apagamento do /r/ em coda final de palavra não-verbal."
+    regra:
+      tipo: apagamento_final
+      alvo: [r, ɾ]
+      condicao: coda_final
+    exemplos:
+      - { padrao: mulher, variante: mulhé }
+
+  - id: epentese_encontro_consonantal
+    rotulo: "Epêntese em encontro consonantal"
+    descricao: "Inserção de vogal de apoio para desfazer encontro consonantal."
+    regra:
+      tipo: epentese
+      insere: [e, i]
+      contexto: encontro_consonantal
+    exemplos:
+      - { padrao: advogado, variante: adevogado }
+      - { padrao: pneu, variante: peneu }
+
+  - id: despalatalizacao
+    rotulo: "Despalatalização"
+    descricao: "Perda do traço palatal, tipicamente /ʎ/ -> /j/."
+    regra:
+      tipo: substituicao
+      de: ["ʎ"]
+      para: [j, i]
+    exemplos:
+      - { padrao: trabalho, variante: trabaio }
+      - { padrao: palha, variante: paia }
+
+# Atalho de alta confiança: pares exatos já conhecidos. Consultado antes das
+# regras, porque não depende de acertar a segmentação fonêmica.
+lexico:
+  - { padrao: problema, variante: pobrema, processo: metatese }
+  - { padrao: bicicleta, variante: bicicreta, processo: metatese }
+  - { padrao: planta, variante: pranta, processo: rotacismo }
+  - { padrao: blusa, variante: brusa, processo: rotacismo }
+  - { padrao: peixe, variante: pexe, processo: monotongacao }
+  - { padrao: caixa, variante: caxa, processo: monotongacao }
+  - { padrao: falar, variante: falá, processo: reducao_infinitivo }
+  - { padrao: comer, variante: comê, processo: reducao_infinitivo }
+  - { padrao: mulher, variante: mulhé, processo: apagamento_r_final }
+  - { padrao: advogado, variante: adevogado, processo: epentese_encontro_consonantal }
+  - { padrao: pneu, variante: peneu, processo: epentese_encontro_consonantal }
+  - { padrao: trabalho, variante: trabaio, processo: despalatalizacao }
+  - { padrao: palha, variante: paia, processo: despalatalizacao }

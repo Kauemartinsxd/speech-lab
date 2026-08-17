@@ -1,0 +1,87 @@
+# =============================================================================
+# Pares de exemplo cobrindo os processos fonológicos de variantes_ptbr.yaml.
+#
+# `referencia`  = a frase padrão, que vai para o campo de texto de referência.
+# `falado`      = o que a voz efetivamente articula, com a variante.
+#
+# As frases são portadoras de propósito: uma palavra isolada não dá contexto
+# linguístico para o decoder do Whisper normalizar. Com a frase, o efeito que o
+# lab quer medir aparece mais forte — e as métricas de PPM e pausa passam a
+# significar alguma coisa.
+#
+# ATENÇÃO: o áudio gerado a partir daqui é TTS adulto (sintetico=true). Serve
+# para validar o pipeline, NUNCA para responder à pergunta sobre fala infantil.
+# =============================================================================
+version: 1
+voz_padrao: Luciana
+
+pares:
+  - id: metatese_problema
+    processo: metatese
+    palavra_padrao: problema
+    palavra_variante: pobrema
+    referencia: "O problema da conta é difícil."
+    falado: "O pobrema da conta é difícil."
+
+  - id: metatese_bicicleta
+    processo: metatese
+    palavra_padrao: bicicleta
+    palavra_variante: bicicreta
+    referencia: "Minha bicicleta é azul."
+    falado: "Minha bicicreta é azul."
+
+  - id: rotacismo_planta
+    processo: rotacismo
+    palavra_padrao: planta
+    palavra_variante: pranta
+    referencia: "A planta cresceu no quintal."
+    falado: "A pranta cresceu no quintal."
+
+  - id: rotacismo_blusa
+    processo: rotacismo
+    palavra_padrao: blusa
+    palavra_variante: brusa
+    referencia: "A blusa dela é nova."
+    falado: "A brusa dela é nova."
+
+  - id: monotongacao_peixe
+    processo: monotongacao
+    palavra_padrao: peixe
+    palavra_variante: pexe
+    referencia: "O peixe nada no rio."
+    falado: "O pexe nada no rio."
+
+  - id: monotongacao_caixa
+    processo: monotongacao
+    palavra_padrao: caixa
+    palavra_variante: caxa
+    referencia: "A caixa está em cima da mesa."
+    falado: "A caxa está em cima da mesa."
+
+  - id: reducao_infinitivo_falar
+    processo: reducao_infinitivo
+    palavra_padrao: falar
+    palavra_variante: falá
+    referencia: "Ele vai falar com a professora."
+    falado: "Ele vai falá com a professora."
+
+  - id: epentese_advogado
+    processo: epentese_encontro_consonantal
+    palavra_padrao: advogado
+    palavra_variante: adevogado
+    referencia: "O advogado chegou cedo."
+    falado: "O adevogado chegou cedo."
+
+  - id: despalatalizacao_trabalho
+    processo: despalatalizacao
+    palavra_padrao: trabalho
+    palavra_variante: trabaio
+    referencia: "O trabalho ficou pronto ontem."
+    falado: "O trabaio ficou pronto ontem."
+
+  - id: apagamento_r_mulher
+    processo: apagamento_r_final
+    palavra_padrao: mulher
+    palavra_variante: mulhé
+    referencia: "A mulher entrou na sala."
+    falado: "A mulhé entrou na sala."
