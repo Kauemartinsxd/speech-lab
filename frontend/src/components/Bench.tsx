@@ -140,7 +140,10 @@ export default function Bench() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <aside className="flex w-80 shrink-0 flex-col gap-3 overflow-y-auto border-r border-bench-border p-3">
+        <aside className="flex w-80 shrink-0 flex-col border-r border-bench-border">
+          {/* só esta região rola; a barra de ação fica ancorada embaixo, senão o
+              botão de executar sai da tela quando a lista de engines cresce */}
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-3">
           <section className="space-y-2">
             <div className="rotulo">entrada</div>
             <RecorderPanel onAudio={receberAudio} desabilitado={rodando} />
@@ -202,26 +205,35 @@ export default function Bench() {
               onToggle={alternar}
             />
           </section>
+          </div>
 
-          {externasSelecionadas.length > 0 && (
-            <div className="rounded border border-red-900 bg-red-950/40 p-2 text-[11px] text-red-300">
-              <strong>O áudio sairá desta máquina.</strong> As engines{" "}
-              {externasSelecionadas.map((e) => e.name).join(", ")} enviam o áudio para
-              um serviço externo. Áudio de criança é dado biométrico sob a LGPD.
-            </div>
-          )}
+          <div className="shrink-0 space-y-2 border-t border-bench-border bg-bench-panel p-3">
+            {externasSelecionadas.length > 0 && (
+              <div className="rounded border border-red-900 bg-red-950/40 p-2 text-[11px] text-red-300">
+                <strong>O áudio sairá desta máquina.</strong> As engines{" "}
+                {externasSelecionadas.map((e) => e.name).join(", ")} enviam o áudio para
+                um serviço externo. Áudio de criança é dado biométrico sob a LGPD.
+              </div>
+            )}
 
-          <button
-            className="botao-primario"
-            onClick={executar}
-            disabled={!sampleAtual || colunas.length === 0 || rodando}
-          >
-            {rodando ? "executando…" : `executar ${colunas.length} engine(s)`}
-          </button>
+            <button
+              className="botao-primario w-full"
+              onClick={executar}
+              disabled={!sampleAtual || colunas.length === 0 || rodando}
+            >
+              {rodando ? "executando…" : `executar ${colunas.length} engine(s)`}
+            </button>
 
-          {erro && (
-            <div className="rounded bg-rose-950/50 p-2 text-[11px] text-rose-300">{erro}</div>
-          )}
+            {!sampleAtual && (
+              <div className="text-center text-[11px] text-bench-muted">
+                escolha uma amostra na lista
+              </div>
+            )}
+
+            {erro && (
+              <div className="rounded bg-rose-950/50 p-2 text-[11px] text-rose-300">{erro}</div>
+            )}
+          </div>
         </aside>
 
         <main className="flex min-w-0 flex-1 flex-col">
