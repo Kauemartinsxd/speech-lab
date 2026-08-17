@@ -19,9 +19,9 @@ __pycache__/
 node_modules/
 frontend/dist/
 
-# modelos baixados
-models/
-.cache/
+# modelos baixados (ancorado na raiz: backend/app/models/ é código)
+/models/
+/.cache/
 
 # macOS
 .DS_Store
