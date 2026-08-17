@@ -1,0 +1,130 @@
+==============================================================================
+amostra    seed:metatese_problema   2.12s
+referência O problema da conta é difícil.
+falado     O pobrema da conta é difícil.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_strict      18152ms  conf 0.893  normalizou para a referência
+                     → 'O problema da conta é difícil.'
+  whisper_baseline    18796ms  conf 0.893  normalizou para a referência
+                     → 'O problema da conta é difícil.'
+  ctc_greedy           6691ms  conf 0.960  divergiu de ambas
+                     → 'o pobrinma da conta é difícil'
+==============================================================================
+==============================================================================
+amostra    seed:metatese_bicicleta   1.64s
+referência Minha bicicleta é azul.
+falado     Minha bicicreta é azul.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_strict      11181ms  conf 0.994  normalizou para a referência
+                     → 'Minha bicicleta é azul.'
+  ctc_greedy            392ms  conf 0.990  normalizou para a referência
+                     → 'minha bicicleta é azul'
+  whisper_baseline    11849ms  conf 0.994  normalizou para a referência
+                     → 'Minha bicicleta é azul.'
+==============================================================================
+==============================================================================
+amostra    seed:rotacismo_planta   1.78s
+referência A planta cresceu no quintal.
+falado     A pranta cresceu no quintal.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11333ms  conf 0.984  normalizou para a referência
+                     → 'A planta cresceu no quintal.'
+  ctc_greedy            115ms  conf 0.955  divergiu de ambas
+                     → 'aplanta a cresceu no quintal'
+  whisper_strict      11981ms  conf 0.984  normalizou para a referência
+                     → 'A planta cresceu no quintal.'
+==============================================================================
+==============================================================================
+amostra    seed:rotacismo_blusa   1.53s
+referência A blusa dela é nova.
+falado     A brusa dela é nova.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11068ms  conf 0.992  preservou a fala
+                     → 'A brusa dela é nova.'
+  ctc_greedy            254ms  conf 0.957  divergiu de ambas
+                     → 'a blusa dela enova'
+  whisper_strict      11719ms  conf 0.992  preservou a fala
+                     → 'A brusa dela é nova.'
+==============================================================================
+==============================================================================
+amostra    seed:monotongacao_peixe   1.43s
+referência O peixe nada no rio.
+falado     O pexe nada no rio.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11367ms  conf 0.866  normalizou para a referência
+                     → 'O peixe nada no rio.'
+  ctc_greedy             98ms  conf 0.836  divergiu de ambas
+                     → 'ou pe chinada no rio'
+  whisper_strict      12023ms  conf 0.866  normalizou para a referência
+                     → 'O peixe nada no rio.'
+==============================================================================
+==============================================================================
+amostra    seed:monotongacao_caixa   2.15s
+referência A caixa está em cima da mesa.
+falado     A caxa está em cima da mesa.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11760ms  conf 0.941  normalizou para a referência
+                     → 'A caixa está em cima da mesa.'
+  ctc_greedy            396ms  conf 0.939  divergiu de ambas
+                     → 'a caixa aí está aí em cima da mesa'
+  whisper_strict      12467ms  conf 0.941  normalizou para a referência
+                     → 'A caixa está em cima da mesa.'
+==============================================================================
+==============================================================================
+amostra    seed:reducao_infinitivo_falar   1.98s
+referência Ele vai falar com a professora.
+falado     Ele vai falá com a professora.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11224ms  conf 0.991  normalizou para a referência
+                     → 'Ele vai falar com a professora.'
+  ctc_greedy             82ms  conf 0.990  divergiu de ambas
+                     → 'ele vai falar como é professora'
+  whisper_strict      11917ms  conf 0.991  normalizou para a referência
+                     → 'Ele vai falar com a professora.'
+==============================================================================
+==============================================================================
+amostra    seed:epentese_advogado   1.81s
+referência O advogado chegou cedo.
+falado     O adevogado chegou cedo.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_strict      11328ms  conf 0.912  divergiu de ambas
+                     → 'Um advogado chegou cedo.'
+  ctc_greedy             84ms  conf 0.992  normalizou para a referência
+                     → 'o advogado chegou cedo'
+  whisper_baseline    11968ms  conf 0.912  divergiu de ambas
+                     → 'Um advogado chegou cedo.'
+==============================================================================
+==============================================================================
+amostra    seed:despalatalizacao_trabalho   2.03s
+referência O trabalho ficou pronto ontem.
+falado     O trabaio ficou pronto ontem.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11055ms  conf 0.988  normalizou para a referência
+                     → 'O trabalho ficou pronto ontem.'
+  ctc_greedy            109ms  conf 0.926  divergiu de ambas
+                     → 'o trabalho ficou pronto oncle'
+  whisper_strict      11696ms  conf 0.988  normalizou para a referência
+                     → 'O trabalho ficou pronto ontem.'
+==============================================================================
+==============================================================================
+amostra    seed:apagamento_r_mulher   1.52s
+referência A mulher entrou na sala.
+falado     A mulhé entrou na sala.   (anotação humana)
+voz sintética (Luciana) — valida o pipeline, não responde à pergunta sobre fala infantil
+------------------------------------------------------------------------------
+  whisper_baseline    11048ms  conf 0.990  normalizou para a referência
+                     → 'A mulher entrou na sala.'
+  ctc_greedy            102ms  conf 0.996  normalizou para a referência
+                     → 'a mulher entrou na sala'
+  whisper_strict      11683ms  conf 0.990  normalizou para a referência
+                     → 'A mulher entrou na sala.'
+==============================================================================
