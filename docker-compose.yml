@@ -1,0 +1,54 @@
+# Perfis:
+#   docker compose --profile cpu up      -> CPU, funciona em qualquer lugar
+#   docker compose --profile gpu up      -> exige NVIDIA + nvidia-container-toolkit
+#
+# Em Apple Silicon use o perfil cpu: o container é uma VM Linux e não enxerga
+# o Metal, então não há MPS aqui. Para desenvolver no Mac, rode nativo com
+# `make dev` — é bem mais rápido.
+
+services:
+  backend:
+    profiles: ["cpu"]
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - hf-models:/models
+    environment:
+      SPEECHLAB_DEVICE: cpu
+      SPEECHLAB_DB_PATH: /app/data/speechlab.db
+      SPEECHLAB_AUDIO_DIR: /app/data/audio
+      # dentro do container a lib do espeak não está no caminho do Homebrew
+      PHONEMIZER_ESPEAK_LIBRARY: /usr/lib/x86_64-linux-gnu/libespeak-ng.so.1
+    env_file:
+      - path: .env
+        required: false
+
+  backend-gpu:
+    profiles: ["gpu"]
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data
+      - hf-models:/models
+    environment:
+      SPEECHLAB_DEVICE: cuda
+      SPEECHLAB_DB_PATH: /app/data/speechlab.db
+      SPEECHLAB_AUDIO_DIR: /app/data/audio
+      PHONEMIZER_ESPEAK_LIBRARY: /usr/lib/x86_64-linux-gnu/libespeak-ng.so.1
+    env_file:
+      - path: .env
+        required: false
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  # os pesos ficam num volume: ~7 GB não devem ser rebaixados a cada build
+  hf-models:
