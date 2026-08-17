@@ -1,0 +1,27 @@
+# segredos
+.env
+
+# dados sensíveis: áudio é dado biométrico, nunca versionar
+data/audio/
+data/exports/
+*.db
+*.db-journal
+*.sqlite3
+
+# python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# node
+node_modules/
+frontend/dist/
+
+# modelos baixados
+models/
+.cache/
+
+# macOS
+.DS_Store
