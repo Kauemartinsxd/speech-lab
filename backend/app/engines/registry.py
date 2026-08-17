@@ -75,7 +75,7 @@ def engine_matrix() -> list[dict]:
     flags = get_settings().enabled_engines()
     matrix = []
 
-    for name, (module_path, class_name) in ENGINE_SPECS.items():
+    for name in ENGINE_SPECS:
         enabled = flags.get(name, False)
         engine = load_engine(name)
 

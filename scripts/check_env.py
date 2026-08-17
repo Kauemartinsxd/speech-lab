@@ -76,10 +76,22 @@ def check_python() -> None:
         ("azure.cognitiveservices.speech", "uv sync --extra azure"),
         ("google.genai", "uv sync --extra gemini"),
     ):
-        if importlib.util.find_spec(modulo) is not None:
+        if _tem_modulo(modulo):
             linha(OK, modulo)
         else:
             linha(FALTA, modulo, remedio)
+
+
+def _tem_modulo(nome: str) -> bool:
+    """find_spec LEVANTA quando o pacote-pai não existe, em vez de devolver None.
+
+    O diagnóstico não pode morrer por causa de dependência opcional ausente —
+    é justamente esse o estado que ele existe para relatar.
+    """
+    try:
+        return importlib.util.find_spec(nome) is not None
+    except (ImportError, ModuleNotFoundError, ValueError):
+        return False
 
 
 def check_device() -> None:
@@ -149,9 +161,7 @@ def check_privacidade() -> None:
     linha(
         OK,
         "descarte de áudio",
-        "LIGADO (quebra player e re-execução)"
-        if s.discard_audio_after_features
-        else "desligado",
+        "LIGADO (quebra player e re-execução)" if s.discard_audio_after_features else "desligado",
     )
     externas = [
         n for n, on in s.enabled_engines().items() if on and n in ("azure_pa", "gemini_audio")

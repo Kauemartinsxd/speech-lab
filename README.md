@@ -66,11 +66,55 @@ que embute um modelo de linguagem. "pobrema" tem probabilidade baixíssima em pt
 "problema" tem alta. O decoder escolhe a alta.
 
 O `ctc_greedy` decodifica quadro a quadro, tomando o argmax de cada frame de forma
-independente, **sem beam search e sem KenLM**. Não há nada no caminho que puxe a saída
-para a forma padrão — daí a expectativa de que escreva `pobrema`.
+independente, **sem beam search e sem KenLM**. A expectativa era que, sem nada no
+caminho puxando para a forma padrão, ele escrevesse `pobrema`.
 
 É por isso que a decodificação greedy é obrigatória aqui. Ligar beam search com LM
 reintroduziria exatamente o viés que o lab quer medir.
+
+**A expectativa não se confirmou.** Ver "Resultados do M0" abaixo.
+
+## Resultados do M0 (2026-08-17)
+
+10 amostras cobrindo 7 processos fonológicos, voz sintética `Luciana`, medidas contra
+anotação humana. Validade do seed conferida antes: `scripts/validate_seed.py` sintetiza
+a frase padrão e a variante com a mesma voz e mede a distância entre os sinais — nos 10
+pares o RMS ficou entre 0,11 e 0,28, muito acima do limiar de 0,01. O TTS articulou
+mesmo as variantes, então transcrever a forma padrão é normalização, não fidelidade.
+
+| | preservou o desvio | normalizou | ambíguo |
+|---|:-:|:-:|:-:|
+| `whisper_baseline` | 1 | **9** | 0 |
+| `whisper_strict` | 1 | **9** | 0 |
+| `ctc_greedy` | 1 | **8** | 1 |
+
+Três achados:
+
+**1. O caso canônico reproduz.** Com "O pobrema da conta é difícil", o Whisper escreve
+`O problema da conta é difícil.` e o CTC escreve `o pobrinma da conta é difícil` — a
+metátese (`pobr-` em vez de `probl-`) sobrevive no CTC e desaparece no Whisper.
+
+**2. Tirar o condicionamento não muda nada.** `whisper_strict`
+(`condition_on_previous_text=False`, `temperature=0`) produziu saída idêntica ao
+`whisper_baseline` nas 10 amostras. A normalização não vem do condicionamento no texto
+anterior; vem do decoder.
+
+**3. O CTC greedy também normaliza — em 8 dos 10 casos.** Este é o resultado que
+contraria a hipótese de partida. Em `blusa → brusa` os papéis chegaram a se inverter: o
+Whisper preservou `brusa` e o CTC escreveu `blusa`.
+
+A hipótese para o item 3, ainda não testada: o modelo XLSR foi fine-tunado sobre
+transcrições **ortográficas** de fala real, e isso assa um prior lexical na própria
+camada de saída acústica. Remover o KenLM remove só uma das duas fontes de
+normalização; a outra veio junto com o fine-tuning.
+
+Se isso se confirmar, é o argumento mais forte a favor do Caminho 2: um modelo de
+**fonemas** não tem léxico ortográfico para o qual puxar.
+
+Ressalva que limita todas as conclusões acima: o áudio é TTS adulto, fora do domínio de
+um modelo treinado em fala espontânea real (CoRAA), e mais ainda fora do domínio da fala
+infantil. Isto mede o comportamento das engines nestes dados, não responde à pergunta de
+pesquisa. Quem responde é o aparato de ground truth com fala real (M6).
 
 ## As três categorias
 

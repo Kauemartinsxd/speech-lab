@@ -17,13 +17,12 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "backend"))
 
-from sqlmodel import Session, select  # noqa: E402
-
 from app.db import get_engine, init_db  # noqa: E402
 from app.engines.base import AudioInput, EngineRequest, EngineStatus  # noqa: E402
 from app.engines.registry import enabled_engine_names, load_engine  # noqa: E402
 from app.engines.runner import run_engines  # noqa: E402
 from app.models import Annotation, Sample  # noqa: E402
+from sqlmodel import Session, select  # noqa: E402
 
 VERDE = "\033[32m"
 AMARELO = "\033[33m"
@@ -35,9 +34,7 @@ def normalizar(texto: str) -> str:
     import unicodedata
 
     sem_acento = "".join(
-        c
-        for c in unicodedata.normalize("NFD", texto.lower())
-        if unicodedata.category(c) != "Mn"
+        c for c in unicodedata.normalize("NFD", texto.lower()) if unicodedata.category(c) != "Mn"
     )
     return " ".join("".join(c for c in p if c.isalnum()) for p in sem_acento.split())
 
@@ -59,8 +56,10 @@ async def comparar(sample: Sample, verdade: str | None, engine_names: list[str])
     if verdade:
         print(f"{VERDE}falado{RESET}     {VERDE}{verdade}{RESET}   (anotação humana)")
     if sample.sintetico:
-        print(f"{CINZA}voz sintética ({sample.tts_voice}) — valida o pipeline, "
-              f"não responde à pergunta sobre fala infantil{RESET}")
+        print(
+            f"{CINZA}voz sintética ({sample.tts_voice}) — valida o pipeline, "
+            f"não responde à pergunta sobre fala infantil{RESET}"
+        )
     print("-" * 78)
 
     alvo = normalizar(verdade) if verdade else None
@@ -68,8 +67,10 @@ async def comparar(sample: Sample, verdade: str | None, engine_names: list[str])
 
     async for r in run_engines(engines, req):
         if r.status is not EngineStatus.OK:
-            print(f"  {r.name if hasattr(r, 'name') else r.engine:18} "
-                  f"{r.status.value} — {r.unavailable_reason}")
+            print(
+                f"  {r.name if hasattr(r, 'name') else r.engine:18} "
+                f"{r.status.value} — {r.unavailable_reason}"
+            )
             continue
 
         saida = normalizar(r.transcript or "")
@@ -80,9 +81,7 @@ async def comparar(sample: Sample, verdade: str | None, engine_names: list[str])
         else:
             veredito = f"{CINZA}divergiu de ambas{RESET}"
 
-        conf = r.metrics.get("confianca_media") or r.metrics.get(
-            "confianca_media_caractere"
-        )
+        conf = r.metrics.get("confianca_media") or r.metrics.get("confianca_media_caractere")
         conf_txt = f"conf {conf:.3f}" if conf else ""
         print(f"  {r.engine:18} {r.latency_ms:>6}ms {conf_txt:>11}  {veredito}")
         print(f"  {'':18} → {r.transcript!r}")
@@ -111,9 +110,7 @@ def main() -> int:
 
         pares = []
         for s in amostras:
-            anotacao = session.exec(
-                select(Annotation).where(Annotation.sample_id == s.id)
-            ).first()
+            anotacao = session.exec(select(Annotation).where(Annotation.sample_id == s.id)).first()
             pares.append((s, anotacao.transcript_fiel if anotacao else None))
 
     for sample, verdade in pares:

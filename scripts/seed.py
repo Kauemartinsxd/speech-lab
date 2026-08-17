@@ -21,12 +21,11 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "backend"))
 
 import yaml  # noqa: E402
-from sqlmodel import Session, select  # noqa: E402
-
 from app.audio.normalize import normalize_audio  # noqa: E402
 from app.config import get_settings  # noqa: E402
 from app.db import get_engine, init_db  # noqa: E402
 from app.models import Annotation, Sample, SampleSource  # noqa: E402
+from sqlmodel import Session, select  # noqa: E402
 
 SEED_FILE = REPO_ROOT / "data" / "seed" / "seed_pairs.yaml"
 

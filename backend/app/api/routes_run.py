@@ -12,7 +12,8 @@ from sqlmodel import Session
 from sse_starlette.sse import EventSourceResponse
 
 from app.config import get_settings
-from app.db import get_session, get_engine as get_db_engine
+from app.db import get_engine as get_db_engine
+from app.db import get_session
 from app.engines.base import AudioInput, EngineRequest, EngineResult
 from app.engines.registry import enabled_engine_names, load_engine
 from app.engines.runner import run_engines

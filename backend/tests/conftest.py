@@ -25,9 +25,17 @@ def tone_wav(tmp_path_factory) -> Path:
     dest = tmp_path_factory.mktemp("audio") / "tone_44k_stereo.wav"
     subprocess.run(
         [
-            "ffmpeg", "-hide_banner", "-loglevel", "error", "-y",
-            "-f", "lavfi", "-i", "sine=frequency=440:duration=1.5:sample_rate=44100",
-            "-ac", "2",
+            "ffmpeg",
+            "-hide_banner",
+            "-loglevel",
+            "error",
+            "-y",
+            "-f",
+            "lavfi",
+            "-i",
+            "sine=frequency=440:duration=1.5:sample_rate=44100",
+            "-ac",
+            "2",
             str(dest),
         ],
         check=True,

@@ -56,9 +56,7 @@ def _hf_cache_has(repo_id: str) -> bool:
     """Checagem barata de presença no cache do HuggingFace. Não baixa nada."""
     import os
 
-    cache_root = Path(
-        os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface")
-    )
+    cache_root = Path(os.environ.get("HF_HOME", Path.home() / ".cache" / "huggingface"))
     hub = cache_root / "hub" if (cache_root / "hub").exists() else cache_root
     folder = "models--" + repo_id.replace("/", "--")
     return (hub / folder).exists()

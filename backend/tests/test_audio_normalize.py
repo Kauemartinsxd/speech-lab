@@ -10,7 +10,6 @@ from pathlib import Path
 
 import pytest
 import soundfile as sf
-
 from app.audio.normalize import (
     TARGET_SAMPLE_RATE,
     AudioNormalizationError,

@@ -147,7 +147,7 @@ def normalize_audio(src: Path, dest: Path) -> NormalizedAudio:
     )
 
 
-def load_waveform(path: Path) -> tuple["object", int]:
+def load_waveform(path: Path) -> tuple[object, int]:
     """Carrega o WAV normalizado como float32 mono em [-1, 1].
 
     Devolve (numpy.ndarray, sample_rate). Import de soundfile é local para

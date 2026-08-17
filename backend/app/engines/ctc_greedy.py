@@ -162,9 +162,7 @@ class CtcGreedyEngine(Engine):
         )
         words = self._group_words(chars)
 
-        transcript = "".join(
-            " " if c.text == WORD_DELIMITER else c.text for c in chars
-        ).strip()
+        transcript = "".join(" " if c.text == WORD_DELIMITER else c.text for c in chars).strip()
 
         char_conf = [c.confidence for c in chars if c.confidence is not None]
         non_blank = pred_ids != blank_id
