@@ -8,6 +8,7 @@ help:
 	@echo "  make dev      backend :8000 + frontend :5173"
 	@echo "  make test     pytest"
 	@echo "  make seed     gera as amostras de exemplo"
+	@echo "  make compare  comparativo Whisper vs CTC em todas as amostras"
 	@echo "  make eval     WER/PER/F1 de cada engine contra a anotação humana"
 	@echo "  make fmt      ruff format + check"
 
@@ -36,6 +37,9 @@ test:
 
 seed:
 	uv run python scripts/seed.py
+
+compare:
+	uv run python scripts/compare.py --todas
 
 eval:
 	uv run python scripts/eval.py
