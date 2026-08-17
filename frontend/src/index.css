@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-bench-bg text-bench-text antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+}
+
+@layer components {
+  .painel {
+    @apply rounded border border-bench-border bg-bench-panel;
+  }
+  .rotulo {
+    @apply text-[11px] uppercase tracking-wider text-bench-muted;
+  }
+  .campo {
+    @apply w-full rounded border border-bench-border bg-bench-bg px-2 py-1.5 text-sm
+           text-bench-text outline-none focus:border-sky-600;
+  }
+  .botao {
+    @apply rounded border border-bench-border bg-bench-panel px-3 py-1.5 text-sm
+           text-bench-text transition-colors hover:border-sky-600 hover:text-white
+           disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-bench-border;
+  }
+  .botao-primario {
+    @apply rounded bg-sky-700 px-4 py-2 text-sm font-medium text-white
+           transition-colors hover:bg-sky-600
+           disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400;
+  }
+}
