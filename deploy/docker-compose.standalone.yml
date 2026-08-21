@@ -12,7 +12,9 @@ services:
       - "127.0.0.1:${PORT:-8765}:8765"   # loopback: nada exposto na internet
     environment:
       TTS_USER: ${TTS_USER:-prof}
-      TTS_PASSWORD: ${TTS_PASSWORD:?defina TTS_PASSWORD no deploy/.env}
+      # Vazio = SEM autenticação (acesso rápido, qualquer um com o link entra).
+      # Preencha TTS_PASSWORD no deploy/.env para exigir senha.
+      TTS_PASSWORD: ${TTS_PASSWORD:-}
       ASR_DEVICE: ${ASR_DEVICE:-cpu}     # cuda se quiser usar GPU
       OMP_NUM_THREADS: ${OMP_NUM_THREADS:-8}
     volumes:
