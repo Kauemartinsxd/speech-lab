@@ -9,7 +9,10 @@ services:
     container_name: speech_lab
     restart: unless-stopped
     ports:
-      - "127.0.0.1:${PORT:-8765}:8765"   # loopback: nada exposto na internet
+      # BIND_ADDR decide o alcance: 127.0.0.1 (padrão) só a própria máquina;
+      # o IP da LAN quando o túnel/proxy roda em outro host da rede interna.
+      # Em nenhum caso publique em 0.0.0.0 sem TTS_PASSWORD.
+      - "${BIND_ADDR:-127.0.0.1}:${PORT:-8765}:8765"
     environment:
       TTS_USER: ${TTS_USER:-prof}
       # Vazio = SEM autenticação (acesso rápido, qualquer um com o link entra).
