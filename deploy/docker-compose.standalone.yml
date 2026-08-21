@@ -1,0 +1,30 @@
+# Variante portátil: publica só em 127.0.0.1 e não depende de rede externa.
+# Use onde não existe o nginx da ApoIA — quem expõe é um túnel/reverse proxy local.
+services:
+  speech-lab:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: speech-lab:latest
+    container_name: speech_lab
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${PORT:-8765}:8765"   # loopback: nada exposto na internet
+    environment:
+      TTS_USER: ${TTS_USER:-prof}
+      TTS_PASSWORD: ${TTS_PASSWORD:?defina TTS_PASSWORD no deploy/.env}
+      ASR_DEVICE: ${ASR_DEVICE:-cpu}     # cuda se quiser usar GPU
+      OMP_NUM_THREADS: ${OMP_NUM_THREADS:-8}
+    volumes:
+      - models:/models
+    mem_limit: ${MEM_LIMIT:-8g}
+    cpus: ${CPUS:-8.0}
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8765/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 600s
+
+volumes:
+  models:
