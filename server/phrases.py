@@ -1,0 +1,28 @@
+"""Banco de frases para avaliação de leitura/fala (alfabetização), com o foco de cada uma."""
+
+PHRASES = [
+    {"id": 1,  "texto": "Qual é o problema dessa frase?",           "foco": "PR / BL — troca de L por R"},
+    {"id": 2,  "texto": "A planta cresceu rápido no jardim.",       "foco": "PL / CR / R inicial"},
+    {"id": 3,  "texto": "O cachorro pulou o muro.",                 "foco": "RR forte × R fraco"},
+    {"id": 4,  "texto": "Eu gosto de chocolate.",                   "foco": "CH / L entre vogais"},
+    {"id": 5,  "texto": "A bicicleta azul é da Clara.",             "foco": "CL / L final"},
+    {"id": 6,  "texto": "Os meninos brincam na praça.",             "foco": "S final / nasal / PR"},
+    {"id": 7,  "texto": "A galinha comeu milho na palha.",          "foco": "LH / NH"},
+    {"id": 8,  "texto": "O trem passou pela ponte de ferro.",       "foco": "TR / RR / nasal"},
+    {"id": 9,  "texto": "Flávio bebeu um copo de leite.",           "foco": "FL / B / L"},
+    {"id": 10, "texto": "A chuva molhou o chão da varanda.",        "foco": "CH / LH / ÃO"},
+    {"id": 11, "texto": "O rato roeu a roupa do rei de Roma.",      "foco": "R forte inicial"},
+    {"id": 12, "texto": "Três tigres tristes comem trigo.",         "foco": "TR / S final"},
+    {"id": 13, "texto": "A blusa branca está no varal.",            "foco": "BL / BR / L final"},
+    {"id": 14, "texto": "O sapo pulou dentro do lago.",             "foco": "S / P–B / D–T"},
+    {"id": 15, "texto": "Vovó fez bolo de fubá.",                   "foco": "V–B / F"},
+    {"id": 16, "texto": "A zebra corre pela grama verde.",          "foco": "Z / BR / GR / V"},
+    {"id": 17, "texto": "Meu primo dirige um carro prata.",         "foco": "PR / DR / RR / S final"},
+    {"id": 18, "texto": "As crianças gostam de flores.",            "foco": "CR / FL / S final"},
+    {"id": 19, "texto": "O passarinho canta no galho.",             "foco": "SS / NH / LH"},
+    {"id": 20, "texto": "Ela quebrou o prato de vidro.",            "foco": "BR / PR / DR"},
+    {"id": 21, "texto": "O tambor toca forte na festa.",            "foco": "MB / R final / S"},
+    {"id": 22, "texto": "Cláudia trouxe frutas frescas.",           "foco": "CL / TR / FR / S"},
+    {"id": 23, "texto": "O jacaré nada no rio.",                    "foco": "J / R fraco"},
+    {"id": 24, "texto": "A professora explicou a lição.",           "foco": "PR / X / Ç / ÃO"},
+]

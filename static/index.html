@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leitura em Voz Alta — análise de fala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f7f2e8; --paper-2:#efe7d6; --ink:#1f1a15; --ink-2:#5b5148; --ink-3:#8c8074;
+  --rule:#c8d7e8; --margin:#e46b6b; --red:#c8332b; --red-soft:#f6d9d5;
+  --green:#2f7a4c; --green-soft:#d9ead9; --amber:#b7791f; --amber-soft:#f6e6c2;
+  --blue:#2e5c8a; --shadow:0 18px 40px -20px rgba(31,26,21,.35), 0 2px 6px rgba(31,26,21,.08);
+  --serif:"Fraunces", Georgia, serif; --sans:"Atkinson Hyperlegible", system-ui, sans-serif;
+  --ipa:"Gentium Book Plus","Charis SIL","Doulos SIL",Georgia,serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+body{background:
+  radial-gradient(1200px 600px at 10% -10%, #fff7 0%, transparent 60%),
+  radial-gradient(900px 500px at 110% 10%, #e8d9c455 0%, transparent 60%),
+  var(--paper);}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .08 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+a{color:var(--blue)}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 22px 80px}
+header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:26px}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;margin:0;line-height:1.05}
+h1 em{font-style:italic;font-weight:300;color:var(--red)}
+.sub{color:var(--ink-2);margin:6px 0 0;max-width:60ch;font-size:15px}
+.status{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);background:#fff8;border:1px solid #0001;padding:6px 10px;border-radius:999px}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
+.dot.ok{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
+.dot.bad{background:var(--red);box-shadow:0 0 0 3px var(--red-soft)}
+
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:26px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+.card{background:#fffdf8;border-radius:14px;box-shadow:var(--shadow);position:relative}
+.notebook{padding:34px 34px 30px 58px;overflow:hidden;
+  background-image:linear-gradient(transparent 31px, var(--rule) 31px, var(--rule) 32px);background-size:100% 32px;background-position:0 12px;}
+.notebook::before{content:"";position:absolute;top:0;bottom:0;left:40px;width:2px;background:var(--margin);opacity:.7}
+.notebook .holes{position:absolute;left:12px;top:36px;bottom:36px;width:14px;display:flex;flex-direction:column;justify-content:space-between}
+.holes i{width:14px;height:14px;border-radius:50%;background:var(--paper);box-shadow:inset 0 1px 3px #0003}
+.label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.phrase{font-family:var(--serif);font-size:clamp(26px,3.2vw,36px);line-height:32px;font-weight:500;letter-spacing:-.01em;margin:16px 0 8px;min-height:64px;padding-top:2px}
+.phrase[contenteditable]:focus{outline:2px dashed var(--blue);outline-offset:6px;border-radius:6px}
+.foco{font-size:13px;color:var(--ink-2)}
+.foco b{color:var(--red);font-weight:700}
+.rowb{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;align-items:center}
+button{font-family:var(--sans);cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;background:var(--ink);color:#fff;transition:transform .08s ease, box-shadow .2s ease}
+button:hover{transform:translateY(-1px)}
+button:disabled{opacity:.45;cursor:not-allowed;transform:none}
+button.ghost{background:transparent;color:var(--ink);border:1.5px solid #0002}
+button.ghost:hover{border-color:var(--ink)}
+button.tiny{padding:6px 10px;font-size:12px}
+select{font-family:var(--sans);font-size:14px;padding:9px 10px;border-radius:10px;border:1.5px solid #0002;background:#fff}
+
+.recorder{margin-top:26px;display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:center}
+.rec{width:88px;height:88px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;position:relative;box-shadow:0 10px 24px -8px rgba(200,51,43,.7);padding:0}
+.rec svg{width:34px;height:34px}
+.rec.on{animation:pulse 1.2s ease-in-out infinite;background:#a3231c}
+.rec.on::after{content:"";position:absolute;inset:-8px;border-radius:50%;border:3px solid var(--red);opacity:.5;animation:ring 1.2s ease-out infinite}
+.rec.busy{background:var(--ink-3);animation:none}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes ring{0%{transform:scale(.9);opacity:.6}100%{transform:scale(1.25);opacity:0}}
+.rec-info{min-width:0}
+.rec-info .big{font-family:var(--serif);font-size:20px;font-weight:600}
+.rec-info .small{color:var(--ink-2);font-size:13px;margin-top:2px}
+.meter{height:8px;background:#0000000f;border-radius:99px;overflow:hidden;margin-top:10px}
+.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));transition:width .06s linear}
+audio{width:100%;margin-top:14px;height:36px}
+.upload{margin-top:14px;font-size:13px;color:var(--ink-2)}
+.upload input{display:none}
+.upload label{color:var(--blue);cursor:pointer;text-decoration:underline}
+
+.result{padding:28px 30px 26px}
+.result.empty{display:grid;place-items:center;min-height:320px;color:var(--ink-3);text-align:center;font-size:15px}
+.result.empty .ph{font-family:var(--serif);font-size:20px;color:var(--ink-2);font-style:italic}
+.stamp-row{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+.stamp{width:126px;height:126px;border-radius:50%;border:4px double var(--red);display:grid;place-items:center;transform:rotate(-8deg);color:var(--red);flex:none;background:#fff;
+  box-shadow:0 0 0 6px #fff, inset 0 0 0 2px #fff, 0 6px 16px -10px #0006}
+.stamp.ok{border-color:var(--green);color:var(--green)}
+.stamp.mid{border-color:var(--amber);color:var(--amber)}
+.stamp .n{font-family:var(--serif);font-size:44px;font-weight:700;line-height:1;letter-spacing:-.03em}
+.stamp .t{font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-weight:700;margin-top:2px}
+.verdict{font-family:var(--serif);font-size:22px;font-weight:500;line-height:1.25;flex:1;min-width:200px}
+.verdict small{display:block;font-family:var(--sans);font-size:13px;color:var(--ink-2);margin-top:6px;font-weight:400}
+
+.words{display:flex;flex-wrap:wrap;gap:8px 8px;margin:22px 0 4px}
+.w{font-family:var(--serif);font-size:22px;padding:4px 10px 6px;border-radius:8px;border-bottom:3px solid transparent;position:relative;cursor:default;line-height:1.1}
+.w.ok{color:var(--ink);border-bottom-color:var(--green)}
+.w.leve{background:var(--amber-soft);border-bottom-color:var(--amber)}
+.w.erro{background:var(--red-soft);border-bottom-color:var(--red);color:var(--red)}
+.w.suspeita{background:#e6eef6;border-bottom-color:var(--blue);border-bottom-style:dashed;color:var(--blue)}
+.w.extra{background:#eee;border-bottom-color:var(--ink-3);text-decoration:line-through;color:var(--ink-3)}
+.w .tip{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);background:var(--ink);color:#fff;font-family:var(--sans);font-size:12px;padding:8px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5;line-height:1.35}
+.w:hover .tip{opacity:1}
+.legend{font-size:12px;color:var(--ink-3);display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+
+.heard{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0 22px}
+@media (max-width:600px){.heard{grid-template-columns:1fr}}
+.heard .box{background:var(--paper-2);border-radius:10px;padding:12px 14px}
+.heard .box .label{margin-bottom:6px}
+.heard .txt{font-family:var(--serif);font-size:18px;line-height:1.3;word-break:break-word}
+.heard .ipa{font-family:var(--ipa);font-size:18px;color:var(--ink-2)}
+.heard .ipa::before,.heard .ipa::after{content:"/";color:var(--ink-3)}
+.conf-low{color:var(--amber);text-decoration:underline dotted}
+
+h3{font-family:var(--serif);font-size:18px;font-weight:600;margin:20px 0 10px}
+.err{border-left:3px solid var(--red);padding:8px 12px 10px;margin:0 0 10px;background:#fff;border-radius:0 10px 10px 0;box-shadow:0 1px 3px #0001}
+.err.leve{border-left-color:var(--amber)}
+.err.suspeita{border-left-color:var(--blue);border-left-style:dashed}
+.err .head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-family:var(--serif);font-size:20px}
+.err .head .arrow{color:var(--ink-3);font-family:var(--sans);font-size:14px}
+.err .head .heardw{color:var(--red)}
+.err .diff .del{background:var(--red-soft);color:var(--red);text-decoration:line-through;padding:0 2px;border-radius:3px}
+.err .diff .ins{background:var(--green-soft);color:var(--green);padding:0 2px;border-radius:3px;font-weight:700}
+.err .diff .rep{background:var(--amber-soft);padding:0 2px;border-radius:3px;font-weight:700}
+.err .ipa-line{font-family:var(--ipa);font-size:15px;color:var(--ink-2);margin-top:4px}
+.err .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.err details{margin-top:8px}
+.err summary{cursor:pointer;font-size:12px;color:var(--ink-3);display:inline-flex;align-items:center;gap:5px;user-select:none;list-style:none;padding:2px 0}
+.err summary::-webkit-details-marker{display:none}
+.err summary::before{content:"›";font-size:15px;line-height:1;transition:transform .15s ease;display:inline-block}
+.err details[open] summary::before{transform:rotate(90deg)}
+.err summary:hover{color:var(--ink)}
+.err .det{padding-top:4px}
+.err .det .ipa-line{margin-top:0}
+.tag{font-size:12px;background:var(--red-soft);color:var(--red);padding:3px 8px;border-radius:999px;font-weight:700}
+.err.leve .tag,.tag.leve{background:var(--amber-soft);color:var(--amber)}
+.err.suspeita .tag,.tag.suspeita{background:#dce8f3;color:var(--blue)}
+.tag.info{background:#eee;color:var(--ink-2);font-weight:400}
+
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-top:20px}
+.m{background:var(--paper-2);border-radius:10px;padding:10px 12px}
+.m .v{font-family:var(--serif);font-size:24px;font-weight:600;line-height:1}
+.m .k{font-size:11px;color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin-top:4px}
+.hist{margin-top:26px}
+.hist table{width:100%;border-collapse:collapse;font-size:14px}
+.hist td{padding:7px 8px;border-bottom:1px solid #0001;vertical-align:top}
+.hist td:first-child{color:var(--ink-3);white-space:nowrap}
+.hist .sc{font-family:var(--serif);font-weight:700}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90vw}
+.toast.show{opacity:1}
+.fade{animation:fade .35s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Leitura em <em>voz alta</em></h1>
+      <p class="sub">Leia a frase, grave, e veja a transcrição <b>fiel</b> do que foi dito — sem o modelo "consertar" a fala — comparada com o texto certo, letra por letra e som por som.</p>
+    </div>
+    <div class="status" id="status"><span class="dot"></span><span>carregando modelos…</span></div>
+  </header>
+
+  <div class="grid">
+    <!-- ================= FRASE + GRAVAÇÃO ================= -->
+    <section class="card notebook">
+      <div class="holes"><i></i><i></i><i></i></div>
+      <div class="label">Frase para ler</div>
+      <div class="phrase" id="phrase" contenteditable="true" spellcheck="false"></div>
+      <div class="foco" id="foco"></div>
+      <div class="rowb">
+        <button class="ghost tiny" id="btnNext">Próxima frase →</button>
+        <button class="ghost tiny" id="btnRandom">Aleatória</button>
+        <select id="selPhrase" title="Escolher frase"></select>
+        <span class="foco" style="margin-left:auto">ou edite o texto acima ✎</span>
+      </div>
+
+      <div class="recorder">
+        <button class="rec" id="btnRec" title="Gravar (espaço)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="icoMic"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
+        </button>
+        <div class="rec-info">
+          <div class="big" id="recTitle">Toque para gravar</div>
+          <div class="small" id="recSub">Fale a frase com naturalidade. Toque de novo para parar (ou pressione <kbd>espaço</kbd>).</div>
+          <div class="meter"><i id="meter"></i></div>
+          <audio id="player" controls hidden></audio>
+        </div>
+      </div>
+      <div class="upload">…ou <label for="file">envie um arquivo de áudio</label> (wav, mp3, m4a, ogg) <input type="file" id="file" accept="audio/*"></div>
+    </section>
+
+    <!-- ================= RESULTADO ================= -->
+    <section class="card result empty" id="result">
+      <div>
+        <div class="ph">O resultado aparece aqui.</div>
+        <div style="margin-top:8px">Grave a frase ao lado para começar.</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="hist" id="hist" hidden>
+    <h3>Tentativas nesta sessão</h3>
+    <table><tbody id="histBody"></tbody></table>
+  </div>
+
+  <footer>
+    <b>Como funciona.</b> Duas camadas: <b>Letras</b> — transcrição literal com wav2vec2-CTC em português (sem modelo de linguagem, sem autocorreção) comparada palavra a palavra; <b>Sons</b> — reconhecedor de fonemas (IPA, sem léxico) comparado com a pronúncia esperada gerada pelo espeak-ng, tolerando variação normal de vogais e sotaque, e acusando consoantes trocadas/omitidas (ex.: L→R). A nota junta as duas (o pior resultado por palavra). Modelos automáticos erram: ouça a gravação antes de concluir.
+  </footer>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ------------------------------------------------------------ estado
+const $ = s => document.querySelector(s);
+let PHRASES = [], cur = 0, ready = false, hist = [];
+let ctx, stream, source, proc, analyser, chunks = [], recording = false, busy = false, startT = 0, timer;
+
+// ------------------------------------------------------------ frases
+async function loadPhrases(){
+  PHRASES = await (await fetch('/api/phrases')).json();
+  const sel = $('#selPhrase');
+  sel.innerHTML = PHRASES.map((p,i)=>`<option value="${i}">${p.id}. ${p.texto}</option>`).join('');
+  setPhrase(0);
+}
+function setPhrase(i){
+  cur = (i + PHRASES.length) % PHRASES.length;
+  const p = PHRASES[cur];
+  $('#phrase').textContent = p.texto;
+  $('#foco').innerHTML = `Foco: <b>${p.foco}</b>`;
+  $('#selPhrase').value = cur;
+}
+$('#btnNext').onclick = () => setPhrase(cur+1);
+$('#btnRandom').onclick = () => setPhrase(Math.floor(Math.random()*PHRASES.length));
+$('#selPhrase').onchange = e => setPhrase(+e.target.value);
+$('#phrase').addEventListener('input', () => { $('#foco').innerHTML = 'Frase personalizada'; });
+$('#phrase').addEventListener('keydown', e => { if(e.key==='Enter'){ e.preventDefault(); e.target.blur(); } });
+
+// ------------------------------------------------------------ status
+async function pollStatus(){
+  try{
+    const s = await (await fetch('/api/status')).json();
+    const dot = $('#status .dot'), txt = $('#status span:last-child');
+    if (s.orto.error && s.fon.error){ dot.className='dot bad'; txt.textContent='erro ao carregar modelos (veja o terminal)'; return; }
+    if (s.orto.loaded && s.fon.loaded){ ready = true; dot.className='dot ok'; txt.textContent=`modelos prontos · ${s.orto.device}`; return; }
+    if (s.orto.loaded || s.fon.loaded){ ready = true; txt.textContent = `carregando… (${s.orto.loaded?'letras ok':'sons ok'})`; }
+    setTimeout(pollStatus, 1500);
+  }catch(e){ setTimeout(pollStatus, 3000); }
+}
+
+// ------------------------------------------------------------ gravação -> WAV
+async function startRec(){
+  if (busy) return;
+  try{
+    stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  }catch(e){ toast('Não consegui acessar o microfone: ' + e.message); return; }
+  ctx = new (window.AudioContext||window.webkitAudioContext)();
+  source = ctx.createMediaStreamSource(stream);
+  analyser = ctx.createAnalyser(); analyser.fftSize = 512;
+  proc = ctx.createScriptProcessor(4096, 1, 1);
+  chunks = [];
+  proc.onaudioprocess = e => { chunks.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
+  source.connect(analyser); analyser.connect(proc); proc.connect(ctx.destination);
+  recording = true; startT = performance.now();
+  $('#btnRec').classList.add('on');
+  $('#recTitle').textContent = 'Gravando… 0,0 s';
+  $('#recSub').textContent = 'Toque de novo para parar.';
+  $('#player').hidden = true;
+  const buf = new Uint8Array(analyser.frequencyBinCount);
+  timer = setInterval(()=>{
+    analyser.getByteTimeDomainData(buf);
+    let sum=0; for (const v of buf){ const d=(v-128)/128; sum+=d*d; }
+    const rms = Math.sqrt(sum/buf.length);
+    $('#meter').style.width = Math.min(100, rms*300) + '%';
+    $('#recTitle').textContent = 'Gravando… ' + ((performance.now()-startT)/1000).toFixed(1).replace('.',',') + ' s';
+  }, 80);
+}
+async function stopRec(){
+  recording = false; clearInterval(timer); $('#meter').style.width='0';
+  $('#btnRec').classList.remove('on');
+  try{ proc.disconnect(); analyser.disconnect(); source.disconnect(); }catch(e){}
+  stream.getTracks().forEach(t=>t.stop());
+  const sr = ctx.sampleRate; await ctx.close();
+  let len = chunks.reduce((a,c)=>a+c.length,0);
+  const pcm = new Float32Array(len); let o=0; for(const c of chunks){ pcm.set(c,o); o+=c.length; }
+  const wav = encodeWav(resampleTo16k(pcm, sr), 16000);
+  const blob = new Blob([wav], {type:'audio/wav'});
+  $('#player').src = URL.createObjectURL(blob); $('#player').hidden = false;
+  await analyze(blob, 'gravacao.wav');
+}
+function resampleTo16k(x, sr){
+  if (sr === 16000) return x;
+  const ratio = sr/16000, n = Math.floor(x.length/ratio), y = new Float32Array(n);
+  for (let i=0;i<n;i++){ const p=i*ratio, i0=Math.floor(p), i1=Math.min(i0+1,x.length-1), f=p-i0; y[i]=x[i0]*(1-f)+x[i1]*f; }
+  return y;
+}
+function encodeWav(samples, sr){
+  const buf = new ArrayBuffer(44 + samples.length*2), v = new DataView(buf);
+  const ws=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+  ws(0,'RIFF'); v.setUint32(4,36+samples.length*2,true); ws(8,'WAVE'); ws(12,'fmt ');
+  v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true); v.setUint32(24,sr,true);
+  v.setUint32(28,sr*2,true); v.setUint16(32,2,true); v.setUint16(34,16,true); ws(36,'data'); v.setUint32(40,samples.length*2,true);
+  let o=44; for (const s of samples){ const c=Math.max(-1,Math.min(1,s)); v.setInt16(o, c<0?c*0x8000:c*0x7FFF, true); o+=2; }
+  return buf;
+}
+$('#btnRec').onclick = () => recording ? stopRec() : startRec();
+document.addEventListener('keydown', e => {
+  if (e.code==='Space' && document.activeElement !== $('#phrase') && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); recording ? stopRec() : startRec(); }
+});
+$('#file').onchange = e => { const f=e.target.files[0]; if(!f) return; $('#player').src=URL.createObjectURL(f); $('#player').hidden=false; analyze(f, f.name); e.target.value=''; };
+
+// ------------------------------------------------------------ análise
+async function analyze(blob, name){
+  const expected = $('#phrase').textContent.trim();
+  if (!expected){ toast('Escreva ou escolha uma frase primeiro.'); return; }
+  busy = true; $('#btnRec').classList.add('busy'); $('#btnRec').disabled = true;
+  $('#recTitle').textContent = 'Analisando…'; $('#recSub').textContent = 'transcrevendo letras e sons';
+  const fd = new FormData(); fd.append('audio', blob, name); fd.append('expected', expected);
+  try{
+    const r = await fetch('/api/analyze', {method:'POST', body:fd});
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.detail || r.statusText);
+    render(j); pushHist(j);
+  }catch(e){ toast('Erro: ' + e.message); }
+  finally{
+    busy=false; $('#btnRec').classList.remove('busy'); $('#btnRec').disabled=false;
+    $('#recTitle').textContent='Toque para gravar de novo'; $('#recSub').textContent='Repita a mesma frase ou escolha outra.';
+  }
+}
+
+// ------------------------------------------------------------ render
+const esc = s => String(s??'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function diffHtml(diff){
+  return diff.map(d => d.tag==='equal' ? esc(d.exp)
+    : d.tag==='replace' ? `<span class="del">${esc(d.exp)}</span><span class="ins">${esc(d.got)}</span>`
+    : d.tag==='delete' ? `<span class="del">${esc(d.exp)}</span>`
+    : `<span class="ins">${esc(d.got)}</span>`).join('');
+}
+function render(j){
+  const m = j.metrics || j.metricas, nota = m.nota;
+  const cls = nota>=85 ? 'ok' : nota>=65 ? 'mid' : '';
+  const words = j.palavras.map(w => {
+    const tipParts = [];
+    if (w.letras) tipParts.push(`letras: ${w.letras.ouvido ?? '—'}`);
+    if (w.sons) tipParts.push(`sons: /${w.sons.esperado_ipa}/ → /${w.sons.ouvido_ipa || '—'}/`);
+    if (w.rotulos.length) tipParts.push(w.rotulos.join(' · '));
+    return `<span class="w ${w.status}">${esc(w.palavra)}<span class="tip">${esc(tipParts.join('\n')).replace(/\n/g,'<br>')}</span></span>`;
+  }).join('') + j.extras.map(x=>`<span class="w extra">${esc(x.ouvido)}<span class="tip">palavra extra</span></span>`).join('');
+
+  const conf = (j.letras && j.letras.confianca && j.letras.confianca.length) ?
+    j.letras.confianca.map(c => c.conf < 0.6 ? `<span class="conf-low" title="baixa confiança">${esc(c.c)}</span>` : esc(c.c)).join('') : esc(j.letras?.ouvido||'');
+
+  const errs = j.erros.length ? j.erros.map(e => {
+    const head = e.palavra === null
+      ? `<span class="heardw">${esc(e.ouvido_letras)}</span> <span class="arrow">palavra extra</span>`
+      : `<span>${esc(e.palavra)}</span> <span class="arrow">→</span> <span class="heardw diff">${e.diff && e.diff.length ? diffHtml(e.diff) : esc(e.ouvido_letras ?? (e.ouvido_ipa? '(sons diferentes)':'—'))}</span>`;
+    const ipa = e.esperado_ipa ? `<div class="ipa-line">sons esperados /${esc(e.esperado_ipa.replace(/ /g,''))}/ · ouvidos /${esc((e.ouvido_ipa||'').replace(/ /g,'')||'∅')}/</div>` : '';
+    // visível: só o rótulo principal. O resto (IPA e rótulos secundários) fica no "ver detalhes".
+    const tag = t => `<span class="tag ${e.status}">${esc(t)}</span>`;
+    const principal = e.rotulos.length ? `<div class="tags">${tag(e.rotulos[0])}</div>` : '';
+    const resto = e.rotulos.slice(1).map(tag).join('');
+    const detalhe = (ipa || resto)
+      ? `<details><summary>ver detalhes</summary><div class="det">${ipa}${resto ? `<div class="tags">${resto}</div>` : ''}</div></details>`
+      : '';
+    return `<div class="err ${e.status}"><div class="head">${head}</div>${principal}${detalhe}</div>`;
+  }).join('') : `<div class="err" style="border-left-color:var(--green)"><div class="head">Nenhum desvio encontrado ✔</div></div>`;
+
+  $('#result').className = 'card result fade';
+  $('#result').innerHTML = `
+    <div class="stamp-row">
+      <div class="stamp ${cls}"><div class="n">${Math.round(nota)}</div><div class="t">nota</div></div>
+      <div class="verdict">${esc(j.veredito)}<small>${m.palavras_ok}/${m.palavras_total} palavras corretas${m.palavras_extras?` · ${m.palavras_extras} extra(s)`:''} · ${j.audio.duracao_s.toString().replace('.',',')} s de áudio</small></div>
+    </div>
+    <div class="words">${words}</div>
+    <div class="legend"><span><i style="background:var(--green)"></i>correta</span><span><i style="background:var(--amber)"></i>desvio leve</span><span><i style="background:var(--red)"></i>erro confirmado</span><span><i style="background:var(--blue)"></i>suspeita (só uma camada)</span><span><i style="background:var(--ink-3)"></i>extra</span> <span style="margin-left:auto">passe o mouse na palavra para detalhes</span></div>
+    <div class="heard">
+      ${j.letras ? `<div class="box"><div class="label">Ouvido — letras (literal)</div><div class="txt">${conf||'<i>nada</i>'}</div></div>` : ''}
+      ${j.sons ? `<div class="box"><div class="label">Ouvido — sons (IPA, por palavra)</div><div class="txt ipa">${esc(j.palavras.map(w=>w.sons? (w.sons.ouvido_ipa.replace(/ /g,'')||'∅') : '').join('  ')) || '—'}</div></div>` : ''}
+    </div>
+    <h3>Correções</h3>
+    ${errs}
+    <div class="metrics">
+      ${m.nota_letras!=null?`<div class="m"><div class="v">${m.nota_letras}</div><div class="k">nota letras</div></div>`:''}
+      ${m.nota_sons!=null?`<div class="m"><div class="v">${m.nota_sons}</div><div class="k">nota sons</div></div>`:''}
+      ${m.wer!=null?`<div class="m"><div class="v">${m.wer}%</div><div class="k">WER (palavras)</div></div>`:''}
+      ${m.cer!=null?`<div class="m"><div class="v">${m.cer}%</div><div class="k">CER (letras)</div></div>`:''}
+      <div class="m"><div class="v">${j.tempo_total_s}s</div><div class="k">processamento</div></div>
+    </div>`;
+}
+function pushHist(j){
+  hist.unshift({t:new Date(), frase:j.esperado, nota:j.metricas.nota, ouvido:j.letras?.ouvido||j.sons?.ouvido_ipa||''});
+  $('#hist').hidden = false;
+  $('#histBody').innerHTML = hist.map(h=>`<tr><td>${h.t.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td><td class="sc">${Math.round(h.nota)}</td><td>${esc(h.frase)}<br><span style="color:var(--ink-3)">${esc(h.ouvido)}</span></td></tr>`).join('');
+}
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove('show'), 4000); }
+
+loadPhrases(); pollStatus();
+</script>
+</body>
+</html>

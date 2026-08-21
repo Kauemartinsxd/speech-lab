@@ -1,0 +1,10 @@
+torch
+torchaudio
+transformers
+phonemizer
+fastapi
+uvicorn[standard]
+python-multipart
+soundfile
+numpy
+huggingface_hub
