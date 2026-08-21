@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leitura em Voz Alta — análise de fala</title>
+<title>Speech Lab — leitura em voz alta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -28,7 +28,12 @@ a{color:var(--blue)}
 header{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:26px}
 h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;margin:0;line-height:1.05}
 h1 em{font-style:italic;font-weight:300;color:var(--red)}
-.sub{color:var(--ink-2);margin:6px 0 0;max-width:60ch;font-size:15px}
+.sub{color:var(--ink-2);margin:6px 0 0;max-width:62ch;font-size:15px;line-height:1.5}
+.sub b{color:var(--ink)}
+.regras{list-style:none;margin:14px 0 0;padding:0;display:flex;gap:10px;flex-wrap:wrap;max-width:72ch}
+.regras li{flex:1 1 280px;background:#fffdf8;border:1px solid #0001;border-left:3px solid var(--red);
+  border-radius:0 10px 10px 0;padding:9px 13px;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
+.regras b{color:var(--red);font-weight:700}
 .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);background:#fff8;border:1px solid #0001;padding:6px 10px;border-radius:999px}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
 .dot.ok{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
@@ -154,8 +159,12 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
 <div class="wrap">
   <header>
     <div>
-      <h1>Leitura em <em>voz alta</em></h1>
-      <p class="sub">Leia a frase, grave, e veja a transcrição <b>fiel</b> do que foi dito — sem o modelo "consertar" a fala — comparada com o texto certo, letra por letra e som por som.</p>
+      <h1>Speech <em>Lab</em></h1>
+      <p class="sub"><b>Leitura em voz alta.</b> Esta ferramenta mede o nível de leitura numa nota de <b>0 a 100</b>. Você lê a frase, e o sistema transcreve <b>exatamente</b> o que foi dito — sem "consertar" a fala — comparando com o texto certo, letra por letra e som por som.</p>
+      <ul class="regras">
+        <li><b>Grave em silêncio.</b> Qualquer som — conversa, TV, ventilador, rua — entra na gravação e invalida a medição.</li>
+        <li><b>Fale pausadamente, uma palavra de cada vez.</b> Ler rápido demais gruda as palavras e invalida a medição.</li>
+      </ul>
     </div>
     <div class="status" id="status"><span class="dot"></span><span>carregando modelos…</span></div>
   </header>
@@ -191,8 +200,8 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
     <!-- ================= RESULTADO ================= -->
     <section class="card result empty" id="result">
       <div>
-        <div class="ph">O resultado aparece aqui.</div>
-        <div style="margin-top:8px">Grave a frase ao lado para começar.</div>
+        <div class="ph">A nota de leitura aparece aqui.</div>
+        <div style="margin-top:8px">Escolha a frase ao lado, respire, e grave em silêncio.</div>
       </div>
     </section>
   </div>
@@ -203,7 +212,7 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
   </div>
 
   <footer>
-    <b>Como funciona.</b> Duas camadas: <b>Letras</b> — transcrição literal com wav2vec2-CTC em português (sem modelo de linguagem, sem autocorreção) comparada palavra a palavra; <b>Sons</b> — reconhecedor de fonemas (IPA, sem léxico) comparado com a pronúncia esperada gerada pelo espeak-ng, tolerando variação normal de vogais e sotaque, e acusando consoantes trocadas/omitidas (ex.: L→R). A nota junta as duas (o pior resultado por palavra). Modelos automáticos erram: ouça a gravação antes de concluir.
+    <b>Speech Lab.</b> A nota de 0 a 100 mede o quanto a leitura em voz alta corresponde à frase escrita. Duas camadas: <b>Letras</b> — transcrição literal com wav2vec2-CTC em português (sem modelo de linguagem, sem autocorreção) comparada palavra a palavra; <b>Sons</b> — reconhecedor de fonemas (IPA, sem léxico) comparado com a pronúncia esperada gerada pelo espeak-ng, tolerando variação normal de vogais e sotaque, e acusando consoantes trocadas/omitidas (ex.: L→R). A nota junta as duas (o pior resultado por palavra). Modelos automáticos erram: ouça a gravação antes de concluir — e lembre que ruído de fundo ou fala acelerada derrubam a nota sem que haja erro de leitura.
   </footer>
 </div>
 <div class="toast" id="toast"></div>
@@ -370,7 +379,7 @@ function render(j){
       <div class="verdict">${esc(j.veredito)}<small>${m.palavras_ok}/${m.palavras_total} palavras corretas${m.palavras_extras?` · ${m.palavras_extras} extra(s)`:''} · ${j.audio.duracao_s.toString().replace('.',',')} s de áudio</small></div>
     </div>
     <div class="words">${words}</div>
-    <div class="legend"><span><i style="background:var(--green)"></i>correta</span><span><i style="background:var(--amber)"></i>desvio leve</span><span><i style="background:var(--red)"></i>erro confirmado</span><span><i style="background:var(--blue)"></i>suspeita (só uma camada)</span><span><i style="background:var(--ink-3)"></i>extra</span> <span style="margin-left:auto">passe o mouse na palavra para detalhes</span></div>
+    <div class="legend"><span><i style="background:var(--green)"></i>correta</span><span><i style="background:var(--amber)"></i>desvio leve</span><span><i style="background:var(--red)"></i>erro confirmado</span><span><i style="background:var(--blue)"></i>suspeita (só uma camada)</span><span><i style="background:var(--ink-3)"></i>extra</span></div>
     <div class="heard">
       ${j.letras ? `<div class="box"><div class="label">Ouvido — letras (literal)</div><div class="txt">${conf||'<i>nada</i>'}</div></div>` : ''}
       ${j.sons ? `<div class="box"><div class="label">Ouvido — sons (IPA, por palavra)</div><div class="txt ipa">${esc(j.palavras.map(w=>w.sons? (w.sons.ouvido_ipa.replace(/ /g,'')||'∅') : '').join('  ')) || '—'}</div></div>` : ''}
