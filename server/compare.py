@@ -166,7 +166,7 @@ def char_diff(exp: str, got: str) -> list[dict]:
 # ------------------------------------------------- classificação de erros
 _SURDA_SONORA = {("p", "b"), ("t", "d"), ("f", "v"), ("c", "g"), ("q", "g"), ("s", "z"), ("x", "j"), ("ch", "j"), ("x", "g"), ("ch", "g")}
 _VOGAIS = set("aeiouáéíóúâêôãõà")
-BOUNDARY_LABEL = "Vogal alongada ou hesitação na emenda entre as palavras — não é erro de pronúncia"
+BOUNDARY_LABEL = "Vogal alongada ou hesitação na emenda entre as palavras (não é erro de pronúncia)"
 
 
 def _pair(a: str, b: str) -> bool:
@@ -239,7 +239,7 @@ def classify(exp: str, got: str, diff: list[dict],
                 labels.append(f"Omissão de letra ({e})")
         elif tag == "insert":
             if g in _VOGAIS:
-                labels.append(f"Acréscimo de vogal ({g}) — epêntese")
+                labels.append(f"Epêntese: acréscimo de vogal ({g})")
             elif len(g) >= 2:
                 labels.append(f"Acréscimo de trecho ({g})")
             else:
@@ -320,15 +320,15 @@ def compare(expected: str, heard: str) -> dict:
     nota = round(max(0.0, min(100.0, nota)), 1)
 
     if not got_t:
-        veredito = "Nada foi reconhecido — tente gravar de novo, mais perto do microfone."
+        veredito = "Nada foi reconhecido. Grave de novo, mais perto do microfone."
     elif nota >= 95:
         veredito = "Excelente! Fala clara e fiel à frase."
     elif nota >= 80:
         veredito = "Muito bom, com pequenos desvios."
     elif nota >= 60:
-        veredito = "Razoável — há trocas ou omissões que merecem atenção."
+        veredito = "Razoável. Há trocas ou omissões que merecem atenção."
     else:
-        veredito = "Vários desvios em relação à frase — vale repetir com calma."
+        veredito = "Vários desvios em relação à frase. Vale repetir com calma."
 
     return {
         "esperado": expected,

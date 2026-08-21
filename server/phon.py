@@ -327,11 +327,11 @@ def _label(op: PhoneOp) -> str | None:
         return None
     if op.op == "sub":
         if e == "l" and g in R_GROUP:
-            return f"Som /l/ virou /{g}/ — troca de L por R (rotacismo)"
+            return f"Troca de L por R (rotacismo): som /l/ virou /{g}/"
         if e in R_GROUP and g == "l":
-            return f"Som /{e}/ virou /l/ — troca de R por L (lambdacismo)"
+            return f"Troca de R por L (lambdacismo): som /{e}/ virou /l/"
         if _pair_in(e, g, VOICING):
-            return f"Som /{e}/ virou /{g}/ — troca surda/sonora"
+            return f"Troca surda/sonora: som /{e}/ virou /{g}/"
         return f"Som /{e}/ virou /{g}/"
     if op.op == "del":
         return f"Som /{e}/ não foi ouvido (omissão)"
@@ -373,7 +373,7 @@ def compare_phones(words: list[str], expected: list[list[str]], heard: list[str]
             wp.severity = "leve"
             wp.credit = 0.9
             if not wp.labels:   # nunca mostrar aviso sem explicação
-                wp.labels.append("Pequena variação de vogal/sotaque — aceitável")
+                wp.labels.append("Pequena variação de vogal/sotaque (aceitável)")
         else:
             wp.severity = "ok"
             wp.credit = 1.0

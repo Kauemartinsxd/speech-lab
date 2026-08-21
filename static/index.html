@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Speech Lab — leitura em voz alta</title>
+<title>Speech Lab</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..900;1,9..144,300..900&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Gentium+Book+Plus:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -30,10 +30,13 @@ h1{font-family:var(--serif);font-weight:600;font-size:clamp(28px,4vw,44px);lette
 h1 em{font-style:italic;font-weight:300;color:var(--red)}
 .sub{color:var(--ink-2);margin:6px 0 0;max-width:62ch;font-size:15px;line-height:1.5}
 .sub b{color:var(--ink)}
-.regras{list-style:none;margin:14px 0 0;padding:0;display:flex;gap:10px;flex-wrap:wrap;max-width:72ch}
-.regras li{flex:1 1 280px;background:#fffdf8;border:1px solid #0001;border-left:3px solid var(--red);
-  border-radius:0 10px 10px 0;padding:9px 13px;font-size:13.5px;line-height:1.45;color:var(--ink-2)}
-.regras b{color:var(--red);font-weight:700}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);font-weight:700;margin-bottom:7px}
+.regras{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0 0;max-width:74ch}
+.regra{flex:1 1 300px;display:flex;gap:12px;align-items:flex-start;background:#fffdf8;
+  border:1px solid #00000010;border-radius:12px;padding:13px 15px;box-shadow:0 1px 2px #0000000d}
+.regra>svg{width:21px;height:21px;flex:none;color:var(--red);margin-top:2px}
+.regra b{display:block;font-family:var(--serif);font-size:15px;font-weight:600;color:var(--ink);margin-bottom:3px}
+.regra span{display:block;font-size:13px;line-height:1.5;color:var(--ink-2)}
 .status{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);background:#fff8;border:1px solid #0001;padding:6px 10px;border-radius:999px}
 .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
 .dot.ok{background:var(--green);box-shadow:0 0 0 3px var(--green-soft)}
@@ -159,12 +162,21 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
 <div class="wrap">
   <header>
     <div>
+      <div class="eyebrow">Leitura em voz alta</div>
       <h1>Speech <em>Lab</em></h1>
-      <p class="sub"><b>Leitura em voz alta.</b> Esta ferramenta mede o nível de leitura numa nota de <b>0 a 100</b>. Você lê a frase, e o sistema transcreve <b>exatamente</b> o que foi dito — sem "consertar" a fala — comparando com o texto certo, letra por letra e som por som.</p>
-      <ul class="regras">
-        <li><b>Grave em silêncio.</b> Qualquer som — conversa, TV, ventilador, rua — entra na gravação e invalida a medição.</li>
-        <li><b>Fale pausadamente, uma palavra de cada vez.</b> Ler rápido demais gruda as palavras e invalida a medição.</li>
-      </ul>
+      <p class="sub">Mede o nível de leitura numa nota de <b>0 a 100</b>. Você lê a frase e o sistema
+        transcreve <b>exatamente</b> o que foi dito, sem "consertar" a fala, comparando com o texto
+        certo letra por letra e som por som.</p>
+      <div class="regras">
+        <div class="regra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>
+          <div><b>Grave em silêncio</b><span>Qualquer som (conversa, TV, ventilador, rua) entra na gravação e invalida a medição.</span></div>
+        </div>
+        <div class="regra">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true"><path d="M3 12h3.5M10.2 12h3.6M17.5 12H21"/></svg>
+          <div><b>Fale pausadamente</b><span>Uma palavra de cada vez. Ler rápido demais gruda as palavras e invalida a medição.</span></div>
+        </div>
+      </div>
     </div>
     <div class="status" id="status"><span class="dot"></span><span>carregando modelos…</span></div>
   </header>
@@ -211,9 +223,6 @@ footer{margin-top:40px;font-size:12px;color:var(--ink-3);line-height:1.6}
     <table><tbody id="histBody"></tbody></table>
   </div>
 
-  <footer>
-    <b>Speech Lab.</b> A nota de 0 a 100 mede o quanto a leitura em voz alta corresponde à frase escrita. Duas camadas: <b>Letras</b> — transcrição literal com wav2vec2-CTC em português (sem modelo de linguagem, sem autocorreção) comparada palavra a palavra; <b>Sons</b> — reconhecedor de fonemas (IPA, sem léxico) comparado com a pronúncia esperada gerada pelo espeak-ng, tolerando variação normal de vogais e sotaque, e acusando consoantes trocadas/omitidas (ex.: L→R). A nota junta as duas (o pior resultado por palavra). Modelos automáticos erram: ouça a gravação antes de concluir — e lembre que ruído de fundo ou fala acelerada derrubam a nota sem que haja erro de leitura.
-  </footer>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -348,8 +357,8 @@ function render(j){
   const cls = nota>=85 ? 'ok' : nota>=65 ? 'mid' : '';
   const words = j.palavras.map(w => {
     const tipParts = [];
-    if (w.letras) tipParts.push(`letras: ${w.letras.ouvido ?? '—'}`);
-    if (w.sons) tipParts.push(`sons: /${w.sons.esperado_ipa}/ → /${w.sons.ouvido_ipa || '—'}/`);
+    if (w.letras) tipParts.push(`letras: ${w.letras.ouvido ?? '(nada)'}`);
+    if (w.sons) tipParts.push(`sons: /${w.sons.esperado_ipa}/ → /${w.sons.ouvido_ipa || '∅'}/`);
     if (w.rotulos.length) tipParts.push(w.rotulos.join(' · '));
     return `<span class="w ${w.status}">${esc(w.palavra)}<span class="tip">${esc(tipParts.join('\n')).replace(/\n/g,'<br>')}</span></span>`;
   }).join('') + j.extras.map(x=>`<span class="w extra">${esc(x.ouvido)}<span class="tip">palavra extra</span></span>`).join('');
@@ -360,7 +369,7 @@ function render(j){
   const errs = j.erros.length ? j.erros.map(e => {
     const head = e.palavra === null
       ? `<span class="heardw">${esc(e.ouvido_letras)}</span> <span class="arrow">palavra extra</span>`
-      : `<span>${esc(e.palavra)}</span> <span class="arrow">→</span> <span class="heardw diff">${e.diff && e.diff.length ? diffHtml(e.diff) : esc(e.ouvido_letras ?? (e.ouvido_ipa? '(sons diferentes)':'—'))}</span>`;
+      : `<span>${esc(e.palavra)}</span> <span class="arrow">→</span> <span class="heardw diff">${e.diff && e.diff.length ? diffHtml(e.diff) : esc(e.ouvido_letras ?? (e.ouvido_ipa? '(sons diferentes)':'(nada)'))}</span>`;
     const ipa = e.esperado_ipa ? `<div class="ipa-line">sons esperados /${esc(e.esperado_ipa.replace(/ /g,''))}/ · ouvidos /${esc((e.ouvido_ipa||'').replace(/ /g,'')||'∅')}/</div>` : '';
     // visível: só o rótulo principal. O resto (IPA e rótulos secundários) fica no "ver detalhes".
     const tag = t => `<span class="tag ${e.status}">${esc(t)}</span>`;
@@ -381,8 +390,8 @@ function render(j){
     <div class="words">${words}</div>
     <div class="legend"><span><i style="background:var(--green)"></i>correta</span><span><i style="background:var(--amber)"></i>desvio leve</span><span><i style="background:var(--red)"></i>erro confirmado</span><span><i style="background:var(--blue)"></i>suspeita (só uma camada)</span><span><i style="background:var(--ink-3)"></i>extra</span></div>
     <div class="heard">
-      ${j.letras ? `<div class="box"><div class="label">Ouvido — letras (literal)</div><div class="txt">${conf||'<i>nada</i>'}</div></div>` : ''}
-      ${j.sons ? `<div class="box"><div class="label">Ouvido — sons (IPA, por palavra)</div><div class="txt ipa">${esc(j.palavras.map(w=>w.sons? (w.sons.ouvido_ipa.replace(/ /g,'')||'∅') : '').join('  ')) || '—'}</div></div>` : ''}
+      ${j.letras ? `<div class="box"><div class="label">Ouvido em letras (literal)</div><div class="txt">${conf||'<i>nada</i>'}</div></div>` : ''}
+      ${j.sons ? `<div class="box"><div class="label">Ouvido em sons (IPA, por palavra)</div><div class="txt ipa">${esc(j.palavras.map(w=>w.sons? (w.sons.ouvido_ipa.replace(/ /g,'')||'∅') : '').join('  ')) || '∅'}</div></div>` : ''}
     </div>
     <h3>Correções</h3>
     ${errs}

@@ -27,7 +27,7 @@ from .phrases import PHRASES
 ROOT = Path(__file__).resolve().parent.parent
 STATIC = ROOT / "static"
 
-app = FastAPI(title="Análise de Fala — Alfabetização")
+app = FastAPI(title="Speech Lab")
 
 orto = LiteralASR()
 fon = PhoneASR()
@@ -101,7 +101,7 @@ def phrases():
 @app.post("/api/analyze")
 async def analyze(audio: UploadFile = File(...), expected: str = Form(...)):
     if not (orto.loaded or fon.loaded):
-        raise HTTPException(503, "Modelos ainda carregando — aguarde alguns segundos.")
+        raise HTTPException(503, "Modelos ainda carregando. Aguarde alguns segundos.")
     expected = (expected or "").strip()
     if not expected:
         raise HTTPException(400, "Informe a frase esperada.")
@@ -190,7 +190,7 @@ def build_result(expected: str, wave, sr: int) -> dict:
         elif sev_l == "erro" and sev_s in ("ok", "leve"):
             e["status"] = "suspeita"
             e["credit"] = min(0.85, e["sons"]["credit"])
-            labels.append("Só a camada de letras ouviu diferente — pode ser falha do reconhecedor; ouça a gravação")
+            labels.append("Só a camada de letras ouviu diferente. Pode ser falha do reconhecedor; ouça a gravação")
         elif sev_l == "erro" and sev_s is None:      # sem camada de sons
             e["status"] = "erro"
             e["credit"] = round(min(credits), 2)
@@ -225,15 +225,15 @@ def build_result(expected: str, wave, sr: int) -> dict:
 
     heard_text = tr.text if tr else ""
     if not heard_text and not heard_ph:
-        veredito = "Nada foi reconhecido — grave de novo, mais perto do microfone."
+        veredito = "Nada foi reconhecido. Grave de novo, mais perto do microfone."
     elif nota >= 95:
         veredito = "Excelente! Fala clara e fiel à frase."
     elif nota >= 85:
-        veredito = "Muito bom — pequenos desvios."
+        veredito = "Muito bom, com pequenos desvios."
     elif nota >= 65:
-        veredito = "Razoável — há trocas ou omissões que merecem atenção."
+        veredito = "Razoável. Há trocas ou omissões que merecem atenção."
     else:
-        veredito = "Vários desvios em relação à frase — vale repetir com calma."
+        veredito = "Vários desvios em relação à frase. Vale repetir com calma."
 
     return {
         "esperado": expected,

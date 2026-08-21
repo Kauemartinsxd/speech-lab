@@ -1,7 +1,7 @@
 """Banco de frases para avaliação de leitura/fala (alfabetização), com o foco de cada uma."""
 
 PHRASES = [
-    {"id": 1,  "texto": "Qual é o problema dessa frase?",           "foco": "PR / BL — troca de L por R"},
+    {"id": 1,  "texto": "Qual é o problema dessa frase?",           "foco": "PR / BL, troca de L por R"},
     {"id": 2,  "texto": "A planta cresceu rápido no jardim.",       "foco": "PL / CR / R inicial"},
     {"id": 3,  "texto": "O cachorro pulou o muro.",                 "foco": "RR forte × R fraco"},
     {"id": 4,  "texto": "Eu gosto de chocolate.",                   "foco": "CH / L entre vogais"},
