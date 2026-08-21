@@ -43,7 +43,7 @@ _PASSWORD = os.environ.get("TTS_PASSWORD", "").strip()
 
 @app.middleware("http")
 async def basic_auth(request: Request, call_next):
-    if _PASSWORD:
+    if _PASSWORD and request.url.path != "/healthz":
         header = request.headers.get("authorization", "")
         ok = False
         if header.startswith("Basic "):
@@ -75,6 +75,13 @@ def _startup() -> None:
 @app.get("/")
 def index():
     return FileResponse(STATIC / "index.html")
+
+
+@app.get("/healthz")
+def healthz():
+    """Sem senha, de propósito: é o que o Docker/nginx consultam."""
+    return {"ok": True, "ready": orto.loaded or fon.loaded,
+            "orto": orto.loaded, "fon": fon.loaded}
 
 
 @app.get("/api/status")

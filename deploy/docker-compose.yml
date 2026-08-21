@@ -1,0 +1,35 @@
+# Sobe a ferramenta AO LADO do stack da ApoIA, sem publicar porta no host:
+# o apoia_nginx alcança este container pelo nome, na rede que já existe.
+# Nada aqui altera os containers da ApoIA ou do ilumina.
+services:
+  speech-lab:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    image: speech-lab:latest
+    container_name: speech_lab
+    restart: unless-stopped
+    environment:
+      TTS_USER: ${TTS_USER:-prof}
+      TTS_PASSWORD: ${TTS_PASSWORD:?defina TTS_PASSWORD no deploy/.env}
+      ASR_DEVICE: cpu
+      OMP_NUM_THREADS: ${OMP_NUM_THREADS:-3}
+    volumes:
+      - models:/models          # cache do Hugging Face (~2,5 GB, baixado uma vez)
+    networks:
+      - apoiadev_default
+    mem_limit: 6g               # teto: o resto da RAM é da produção
+    cpus: 3.0                   # deixa 1 vCPU livre para a ApoIA
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8765/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 600s        # primeira subida baixa os modelos
+
+volumes:
+  models:
+
+networks:
+  apoiadev_default:
+    external: true
